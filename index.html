@@ -59,6 +59,10 @@ body{background:#1a1a2e;overflow:hidden}
 </head><body>
 <div class="wrap">
   <canvas id="gc"></canvas>
+  <!-- CC0 BGM: Pure Raceway by MintoDog, OpenGameArt.org -->
+  <audio id="bgMusic" loop preload="metadata">
+    <source src="https://opengameart.org/sites/default/files/pure_raceway_bpm160.mp3" type="audio/mpeg">
+  </audio>
   <div id="hud">
     <div id="hud-left">
       <div class="race-logo">MOTO<span>GP</span><small>RACE</small></div><div class="hud-rule"></div>
@@ -183,13 +187,21 @@ var finalStageEl=document.getElementById('finalStage');
 var rankList=document.getElementById('rankList');
 var gearEl=document.getElementById('gearN');
 var miniMap=document.getElementById('miniMap'), miniCtx=miniMap.getContext('2d');
+var bgMusic=document.getElementById('bgMusic');
 
 // เสียงทั้งหมดสร้างในเบราว์เซอร์ จึงไม่ต้องโหลดไฟล์ใหญ่เพิ่ม และจะเริ่มหลังผู้เล่นกด Start เท่านั้น
 // (ข้อกำหนดของ Safari/iOS ไม่อนุญาตให้เปิดเสียงอัตโนมัติก่อนการแตะหน้าจอ)
 var audioGame={ctx:null,master:null,engine:null,engineGain:null,musicGain:null,musicTimer:0,lastBoost:false,lastHit:0};
 function audioNow(){return audioGame.ctx?audioGame.ctx.currentTime:0;}
+function startBackgroundMusic(){
+  if(!bgMusic) return;
+  bgMusic.volume=.26;
+  var playPromise=bgMusic.play();
+  if(playPromise&&playPromise.catch) playPromise.catch(function(){ /* รอการแตะ Start ครั้งถัดไปหากเบราว์เซอร์ยังไม่อนุญาต */ });
+}
+function pauseBackgroundMusic(){ if(bgMusic) bgMusic.pause(); }
 function initGameAudio(){
-  if(audioGame.ctx){ if(audioGame.ctx.state==='suspended') audioGame.ctx.resume(); return; }
+  if(audioGame.ctx){ if(audioGame.ctx.state==='suspended') audioGame.ctx.resume(); startBackgroundMusic(); return; }
   var AC=window.AudioContext||window.webkitAudioContext;
   if(!AC) return;
   try{
@@ -201,6 +213,7 @@ function initGameAudio(){
     var music=audioGame.musicGain=ctx.createGain(); music.gain.value=.045; music.connect(master);
     audioGame.musicOut=music;
   }catch(err){ audioGame.ctx=null; }
+  startBackgroundMusic();
 }
 function gameTone(freq,duration,volume,type,offset){
   if(!audioGame.ctx||!audioGame.master) return;
@@ -228,18 +241,10 @@ function tickGameAudio(dt,boost,braking){
   if(boost&&!audioGame.lastBoost) gameTone(260,.12,.06,'sawtooth');
   if(braking&&speed>4&&Math.random()<dt*3) gameTone(120,.045,.025,'triangle');
   audioGame.lastBoost=boost;
-  // BGM แบบ pulse เบา ๆ ให้บรรยากาศการแข่ง โดยไม่กลบเสียงเครื่องยนต์
-  if(state==='racing'){
-    audioGame.musicTimer-=dt;
-    if(audioGame.musicTimer<=0){
-      var notes=[110,131,147,165,147,131], note=notes[Math.floor((raceTimer*3)%notes.length)];
-      gameTone(note,.16,.022,'triangle'); gameTone(note*2,.075,.010,'sine',.03);
-      audioGame.musicTimer=.32;
-    }
-  }
 }
 function quietGameAudio(){
   if(audioGame.ctx&&audioGame.engineGain) audioGame.engineGain.gain.setTargetAtTime(.0001,audioNow(),.06);
+  pauseBackgroundMusic();
   audioGame.lastBoost=false;
 }
 
@@ -1297,7 +1302,7 @@ function openPause(){
 }
 function closePause(){
   if(state!=='paused') return;
-  pauseSc.style.display='none'; canvas.style.cursor='grab'; state='racing';
+  pauseSc.style.display='none'; canvas.style.cursor='grab'; state='racing'; startBackgroundMusic();
 }
 function returnToMainMenu(){
   pauseSc.style.display='none'; finishSc.style.display='none'; state='menu'; quietGameAudio(); resetGame(); overlay.style.display='flex';
