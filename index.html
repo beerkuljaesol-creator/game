@@ -42,6 +42,19 @@ body{background:#1a1a2e;overflow:hidden}
 .country-flag{display:block;width:25px;height:17px;object-fit:cover;border:1px solid rgba(255,255,255,.45);box-shadow:0 1px 2px rgba(0,0,0,.35)}.winner-strip .country-flag{width:29px;height:19px}@media(max-width:700px){.country-flag{width:18px;height:12px}}
 /* Mobile touch controls: hidden on mouse/keyboard setups so the desktop view stays clean. */
 #touchControls{display:none;position:absolute;inset:auto 0 0;z-index:6;pointer-events:none;justify-content:space-between;align-items:end;padding:0 18px calc(14px + env(safe-area-inset-bottom));user-select:none;-webkit-user-select:none}.touch-pad{display:grid;gap:10px;pointer-events:auto}.touch-steer,.touch-drive{grid-template-columns:repeat(2,80px)}.touch-key{width:80px;height:70px;border:1px solid rgba(255,255,255,.48);border-radius:17px;background:linear-gradient(145deg,rgba(25,40,54,.92),rgba(6,13,21,.92));box-shadow:0 4px 12px rgba(0,0,0,.3),inset 0 1px rgba(255,255,255,.16);color:#fff;font:900 15px system-ui;letter-spacing:.7px;touch-action:none}.touch-key:active,.touch-key.active{background:linear-gradient(145deg,#e8464b,#a7192b);transform:translateY(1px)}.touch-key small{display:block;font:700 10px system-ui;opacity:.77;margin-top:3px}.touch-key.brake{color:#ffb1b1}.mobile-boost{position:absolute;left:18px;bottom:118px;width:142px;height:50px;border-radius:14px;color:#ffe978;pointer-events:auto}@media (hover:none) and (pointer:coarse){#touchControls{display:flex}#speedGauge{bottom:142px}}@media(max-width:520px){#hud{padding:6px}#hud-left{width:105px;padding:5px 6px;border-left-width:2px}.race-logo{font-size:12px}.race-logo small{font-size:7px;letter-spacing:1px}.hud-rule{margin:4px 0}.lap-readout{font-size:8px}.lap-readout b{font-size:17px}.pos-readout{margin:4px 0;font-size:8px}.pos-readout strong{font-size:10px}.rank-row{height:13px;font-size:7px;grid-template-columns:13px 1fr 19px}.rank-row .tag{height:10px;line-height:10px;font-size:6px}#hud-center{top:6px;padding:5px 8px;font-size:13px}#speedGauge{width:78px;height:78px;right:8px;border-width:5px}.gauge-speed{font-size:18px}.gauge-gear{font-size:16px}.gauge-unit,.gauge-boost{font-size:7px}.touch-steer,.touch-drive{grid-template-columns:repeat(2,68px)}.touch-key{width:68px;height:62px;font-size:13px}.touch-key small{font-size:9px}.mobile-boost{left:10px;bottom:108px;width:126px;height:47px}#touchControls{padding-left:10px;padding-right:10px}}@media(max-width:360px){.touch-steer,.touch-drive{grid-template-columns:repeat(2,62px)}.touch-key{width:62px;height:58px}.mobile-boost{width:118px}}
+/* โทรศัพท์บางรุ่นรายงานความกว้างแบบ landscape เกิน 700px จึงใช้ coarse pointer เป็นเงื่อนไขหลัก */
+@media (hover:none) and (pointer:coarse){
+  #hud{padding:7px 8px}.hud-left,#hud-left{width:112px;padding:5px 6px;border-left-width:2px}
+  .race-logo{font-size:12px}.race-logo small{font-size:7px;letter-spacing:1px}.hud-rule{margin:4px 0}
+  .lap-readout{font-size:8px}.lap-readout b{font-size:18px}.pos-readout{margin:4px 0;font-size:8px}.pos-readout strong{font-size:10px}
+  .rank-row{height:12px;font-size:7px;grid-template-columns:12px 1fr 19px}.rank-row .tag{height:9px;line-height:9px;font-size:6px}
+  #hud-center{top:7px;padding:5px 8px;font-size:13px}
+  #finish-screen{padding:10px}.final-board{width:min(560px,88vw);max-height:84dvh;overflow:auto;padding:10px 9px 9px;border-left-width:4px;box-shadow:0 10px 28px rgba(0,0,0,.5)}
+  .final-kicker{font-size:8px;letter-spacing:1.2px}.final-head{padding-bottom:6px;margin-bottom:6px}.final-head h2{font-size:20px}.final-track{font-size:8px}
+  .winner-strip{gap:6px;padding:6px 7px;margin-bottom:6px;font-size:8px}.winner-strip b,.winner-strip .winner-time{font-size:12px}
+  .results{margin-bottom:8px;font-size:8px}.results th{padding:4px 2px;font-size:7px}.results td{padding:4px 2px}.results .rank-cell{width:22px}.results .flag{width:20px}.results .rider-name small{font-size:6px;margin-top:1px}.results .bike{font-size:7px}.country-flag{width:16px;height:11px}.winner-strip .country-flag{width:20px;height:13px}
+  .final-actions{gap:6px}.final-actions button{padding:7px 9px;font-size:9px}
+}
 </style>
 </head><body>
 <div class="wrap">
@@ -170,6 +183,65 @@ var finalStageEl=document.getElementById('finalStage');
 var rankList=document.getElementById('rankList');
 var gearEl=document.getElementById('gearN');
 var miniMap=document.getElementById('miniMap'), miniCtx=miniMap.getContext('2d');
+
+// เสียงทั้งหมดสร้างในเบราว์เซอร์ จึงไม่ต้องโหลดไฟล์ใหญ่เพิ่ม และจะเริ่มหลังผู้เล่นกด Start เท่านั้น
+// (ข้อกำหนดของ Safari/iOS ไม่อนุญาตให้เปิดเสียงอัตโนมัติก่อนการแตะหน้าจอ)
+var audioGame={ctx:null,master:null,engine:null,engineGain:null,musicGain:null,musicTimer:0,lastBoost:false,lastHit:0};
+function audioNow(){return audioGame.ctx?audioGame.ctx.currentTime:0;}
+function initGameAudio(){
+  if(audioGame.ctx){ if(audioGame.ctx.state==='suspended') audioGame.ctx.resume(); return; }
+  var AC=window.AudioContext||window.webkitAudioContext;
+  if(!AC) return;
+  try{
+    var ctx=audioGame.ctx=new AC(), master=audioGame.master=ctx.createGain();
+    master.gain.value=.30; master.connect(ctx.destination);
+    var engine=audioGame.engine=ctx.createOscillator(), eg=audioGame.engineGain=ctx.createGain();
+    engine.type='sawtooth'; engine.frequency.value=52; eg.gain.value=.0001;
+    engine.connect(eg); eg.connect(master); engine.start();
+    var music=audioGame.musicGain=ctx.createGain(); music.gain.value=.045; music.connect(master);
+    audioGame.musicOut=music;
+  }catch(err){ audioGame.ctx=null; }
+}
+function gameTone(freq,duration,volume,type,offset){
+  if(!audioGame.ctx||!audioGame.master) return;
+  var ctx=audioGame.ctx, t=ctx.currentTime+(offset||0), osc=ctx.createOscillator(), gain=ctx.createGain();
+  osc.type=type||'sine'; osc.frequency.setValueAtTime(freq,t);
+  gain.gain.setValueAtTime(.0001,t); gain.gain.exponentialRampToValueAtTime(volume,t+.012);
+  gain.gain.exponentialRampToValueAtTime(.0001,t+duration);
+  osc.connect(gain); gain.connect(audioGame.master); osc.start(t); osc.stop(t+duration+.03);
+}
+function playCountdownSound(go){
+  gameTone(go?740:420,go?.26:.11,go?.13:.075,go?'square':'sine');
+  if(go) gameTone(980,.28,.09,'square',.08);
+}
+function playCollisionSound(power){
+  if(!audioGame.ctx||audioNow()-audioGame.lastHit<.11) return;
+  audioGame.lastHit=audioNow(); gameTone(95+Math.min(85,power*7),.09,.11,'sawtooth');
+}
+function playLapSound(){ gameTone(660,.11,.10,'square'); gameTone(880,.17,.08,'square',.10); }
+function playFinishSound(){ [523,659,784,1046].forEach(function(n,i){gameTone(n,.28,.105,'square',i*.10);}); }
+function tickGameAudio(dt,boost,braking){
+  if(!audioGame.ctx||!audioGame.engine) return;
+  var t=audioNow(), speed=Math.abs(spd);
+  audioGame.engine.frequency.setTargetAtTime(48+speed*10+(boost?38:0),t,.045);
+  audioGame.engineGain.gain.setTargetAtTime(state==='racing'?(speed>.15?.026+Math.min(.075,speed*.003):.0001):.0001,t,.07);
+  if(boost&&!audioGame.lastBoost) gameTone(260,.12,.06,'sawtooth');
+  if(braking&&speed>4&&Math.random()<dt*3) gameTone(120,.045,.025,'triangle');
+  audioGame.lastBoost=boost;
+  // BGM แบบ pulse เบา ๆ ให้บรรยากาศการแข่ง โดยไม่กลบเสียงเครื่องยนต์
+  if(state==='racing'){
+    audioGame.musicTimer-=dt;
+    if(audioGame.musicTimer<=0){
+      var notes=[110,131,147,165,147,131], note=notes[Math.floor((raceTimer*3)%notes.length)];
+      gameTone(note,.16,.022,'triangle'); gameTone(note*2,.075,.010,'sine',.03);
+      audioGame.musicTimer=.32;
+    }
+  }
+}
+function quietGameAudio(){
+  if(audioGame.ctx&&audioGame.engineGain) audioGame.engineGain.gain.setTargetAtTime(.0001,audioNow(),.06);
+  audioGame.lastBoost=false;
+}
 
 // Keep the track map beneath the race panel. This is calculated from the real HUD height,
 // so it remains separated when names, ranks, and viewport sizes change.
@@ -1127,12 +1199,13 @@ function doCountdown(){
   overlay.style.display='none';
   cdEl.style.display='flex';
   cdEl.textContent='3'; cdEl.style.color='#fff';
+  playCountdownSound(false);
   var n=3;
   var iv=setInterval(function(){
     n--;
-    if(n===0){cdEl.textContent='GO!';cdEl.style.color='#2ecc71';}
+    if(n===0){cdEl.textContent='GO!';cdEl.style.color='#2ecc71';playCountdownSound(true);}
     else if(n<0){clearInterval(iv);cdEl.style.display='none';cdEl.style.color='#fff';state='racing';}
-    else{cdEl.textContent=String(n);cdEl.style.color='#fff';}
+    else{cdEl.textContent=String(n);cdEl.style.color='#fff';playCountdownSound(false);}
   },900);
 }
 
@@ -1205,9 +1278,9 @@ document.querySelectorAll('.lap-choice').forEach(function(button){
     persistMenuSetup();
   });
 });
-document.getElementById('startBtn').addEventListener('click',function(){applyRaceSetup();persistMenuSetup();resetGame();doCountdown();});
+document.getElementById('startBtn').addEventListener('click',function(){initGameAudio();applyRaceSetup();persistMenuSetup();resetGame();doCountdown();});
 document.getElementById('restartBtn').addEventListener('click',function(){
-  finishSc.style.display='none'; resetGame(); doCountdown();
+  initGameAudio(); finishSc.style.display='none'; resetGame(); doCountdown();
 });
 document.getElementById('finishMenuBtn').addEventListener('click',function(){returnToMainMenu();});
 var hudVisible=true;
@@ -1220,17 +1293,17 @@ function setHudVisible(visible){
 }
 function openPause(){
   if(state!=='racing') return;
-  state='paused'; draggingCam=false; canvas.style.cursor='default'; pauseSc.style.display='flex';
+  state='paused'; quietGameAudio(); draggingCam=false; canvas.style.cursor='default'; pauseSc.style.display='flex';
 }
 function closePause(){
   if(state!=='paused') return;
   pauseSc.style.display='none'; canvas.style.cursor='grab'; state='racing';
 }
 function returnToMainMenu(){
-  pauseSc.style.display='none'; finishSc.style.display='none'; state='menu'; resetGame(); overlay.style.display='flex';
+  pauseSc.style.display='none'; finishSc.style.display='none'; state='menu'; quietGameAudio(); resetGame(); overlay.style.display='flex';
 }
 document.getElementById('resumeBtn').addEventListener('click',closePause);
-document.getElementById('pauseRestartBtn').addEventListener('click',function(){pauseSc.style.display='none';resetGame();doCountdown();});
+document.getElementById('pauseRestartBtn').addEventListener('click',function(){initGameAudio();pauseSc.style.display='none';resetGame();doCountdown();});
 document.getElementById('hudToggleBtn').addEventListener('click',function(){setHudVisible(!hudVisible);});
 document.getElementById('changeBikeBtn').addEventListener('click',returnToMainMenu);
 document.getElementById('changeStageBtn').addEventListener('click',returnToMainMenu);
@@ -1387,6 +1460,7 @@ function tickBike(dt){
   // หมุนล้อ
   var ws=spd*dt*8;
   wF.rotation.x+=ws; wR.rotation.x+=ws;
+  tickGameAudio(dt,boost,down||hbrk);
 }
 
 function tickAI(dt){
@@ -1446,6 +1520,7 @@ function resolveVehicleCollisions(){
       spd=Math.max(-0.75,spd-.38);
       shakeT=Math.max(shakeT,.06);
       spawnScrape((bikeRoot.position.x+ai.pos.x)*.5,(bikeRoot.position.z+ai.pos.z)*.5,nx,nz,Math.abs(spd)+ai.spd);
+      playCollisionSound(Math.abs(spd)+ai.spd);
       ai.grp.position.copy(ai.pos);
     }
   });
@@ -1489,9 +1564,13 @@ function finishLap(){
   lap++; lapEl.textContent=lap+'/'+totalLaps;
   if(lap>=totalLaps){
     state='finished';
+    quietGameAudio();
+    playFinishSound();
     finishTEl.textContent='เวลา: '+fmt(raceTimer);
     renderRaceResults();
     finishSc.style.display='flex';
+  }else{
+    playLapSound();
   }
 }
 
