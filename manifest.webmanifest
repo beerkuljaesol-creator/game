@@ -1,0 +1,19 @@
+{
+  "name": "Moto Racer",
+  "short_name": "Moto Racer",
+  "description": "3D motorcycle racing game",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#111a23",
+  "theme_color": "#111a23",
+  "icons": [
+    {
+      "src": "./icons/moto-racer.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
