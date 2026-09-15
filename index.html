@@ -41,7 +41,7 @@ body{background:#1a1a2e;overflow:hidden}
 @media(max-width:700px){.final-board{padding:13px 10px;border-left-width:4px}.final-head h2{font-size:23px}.winner-strip{font-size:10px;padding:7px}.winner-strip b{font-size:14px}.results{font-size:9px}.results th,.results td{padding:5px 3px}.results .flag{font-size:14px;width:22px}.results .rider-name small{font-size:7px}.results .bike{font-size:8px}.final-actions button{padding:8px 10px;font-size:10px}}
 .country-flag{display:block;width:25px;height:17px;object-fit:cover;border:1px solid rgba(255,255,255,.45);box-shadow:0 1px 2px rgba(0,0,0,.35)}.winner-strip .country-flag{width:29px;height:19px}@media(max-width:700px){.country-flag{width:18px;height:12px}}
 /* Mobile touch controls: hidden on mouse/keyboard setups so the desktop view stays clean. */
-#touchControls{display:none;position:absolute;inset:auto 0 0;z-index:6;pointer-events:none;justify-content:space-between;align-items:end;padding:0 18px calc(12px + env(safe-area-inset-bottom));user-select:none;-webkit-user-select:none}.touch-pad{display:grid;gap:9px;pointer-events:auto}.touch-steer{grid-template-columns:repeat(2,64px)}.touch-drive{grid-template-columns:repeat(2,64px)}.touch-key{width:64px;height:56px;border:1px solid rgba(255,255,255,.48);border-radius:15px;background:linear-gradient(145deg,rgba(25,40,54,.92),rgba(6,13,21,.92));box-shadow:0 4px 12px rgba(0,0,0,.3),inset 0 1px rgba(255,255,255,.16);color:#fff;font:900 13px system-ui;letter-spacing:.7px;touch-action:none}.touch-key:active,.touch-key.active{background:linear-gradient(145deg,#e8464b,#a7192b);transform:translateY(1px)}.touch-key small{display:block;font:700 9px system-ui;opacity:.77;margin-top:2px}.touch-key.boost{grid-column:1/-1;width:auto;height:42px;border-radius:12px;color:#ffe978}.touch-key.brake{color:#ffb1b1}@media (hover:none) and (pointer:coarse){#touchControls{display:flex}#hint{bottom:125px}#miniMap{bottom:122px}#speedGauge{bottom:120px}}@media(max-width:520px){#hud{padding:6px}#hud-left{width:105px;padding:5px 6px;border-left-width:2px}.race-logo{font-size:12px}.race-logo small{font-size:7px;letter-spacing:1px}.hud-rule{margin:4px 0}.lap-readout{font-size:8px}.lap-readout b{font-size:17px}.pos-readout{margin:4px 0;font-size:8px}.pos-readout strong{font-size:10px}.rank-row{height:13px;font-size:7px;grid-template-columns:13px 1fr 19px}.rank-row .tag{height:10px;line-height:10px;font-size:6px}#hud-center{top:6px;padding:5px 8px;font-size:13px}#miniMap{width:78px;height:78px;left:6px}#speedGauge{width:78px;height:78px;right:6px;border-width:5px}.gauge-speed{font-size:18px}.gauge-gear{font-size:16px}.gauge-unit,.gauge-boost{font-size:7px}#hint{font-size:8px;padding:3px 8px}.touch-steer,.touch-drive{grid-template-columns:repeat(2,56px)}.touch-key{width:56px;height:50px;font-size:12px}.touch-key.boost{height:37px}.touch-key small{font-size:8px}#touchControls{padding-left:10px;padding-right:10px}}
+#touchControls{display:none;position:absolute;inset:auto 0 0;z-index:6;pointer-events:none;justify-content:space-between;align-items:end;padding:0 18px calc(14px + env(safe-area-inset-bottom));user-select:none;-webkit-user-select:none}.touch-pad{display:grid;gap:10px;pointer-events:auto}.touch-steer,.touch-drive{grid-template-columns:repeat(2,80px)}.touch-key{width:80px;height:70px;border:1px solid rgba(255,255,255,.48);border-radius:17px;background:linear-gradient(145deg,rgba(25,40,54,.92),rgba(6,13,21,.92));box-shadow:0 4px 12px rgba(0,0,0,.3),inset 0 1px rgba(255,255,255,.16);color:#fff;font:900 15px system-ui;letter-spacing:.7px;touch-action:none}.touch-key:active,.touch-key.active{background:linear-gradient(145deg,#e8464b,#a7192b);transform:translateY(1px)}.touch-key small{display:block;font:700 10px system-ui;opacity:.77;margin-top:3px}.touch-key.brake{color:#ffb1b1}.mobile-boost{position:absolute;left:18px;bottom:118px;width:142px;height:50px;border-radius:14px;color:#ffe978;pointer-events:auto}@media (hover:none) and (pointer:coarse){#touchControls{display:flex}#speedGauge{bottom:142px}}@media(max-width:520px){#hud{padding:6px}#hud-left{width:105px;padding:5px 6px;border-left-width:2px}.race-logo{font-size:12px}.race-logo small{font-size:7px;letter-spacing:1px}.hud-rule{margin:4px 0}.lap-readout{font-size:8px}.lap-readout b{font-size:17px}.pos-readout{margin:4px 0;font-size:8px}.pos-readout strong{font-size:10px}.rank-row{height:13px;font-size:7px;grid-template-columns:13px 1fr 19px}.rank-row .tag{height:10px;line-height:10px;font-size:6px}#hud-center{top:6px;padding:5px 8px;font-size:13px}#speedGauge{width:78px;height:78px;right:8px;border-width:5px}.gauge-speed{font-size:18px}.gauge-gear{font-size:16px}.gauge-unit,.gauge-boost{font-size:7px}.touch-steer,.touch-drive{grid-template-columns:repeat(2,68px)}.touch-key{width:68px;height:62px;font-size:13px}.touch-key small{font-size:9px}.mobile-boost{left:10px;bottom:108px;width:126px;height:47px}#touchControls{padding-left:10px;padding-right:10px}}@media(max-width:360px){.touch-steer,.touch-drive{grid-template-columns:repeat(2,62px)}.touch-key{width:62px;height:58px}.mobile-boost{width:118px}}
 </style>
 </head><body>
 <div class="wrap">
@@ -113,10 +113,10 @@ body{background:#1a1a2e;overflow:hidden}
       <button class="touch-key" data-key="KeyD" aria-label="เลี้ยวขวา">▶<small>RIGHT</small></button>
     </div>
     <div class="touch-pad touch-drive">
-      <button class="touch-key boost" data-key="ShiftLeft" aria-label="บูสต์">BOOST</button>
       <button class="touch-key brake" data-key="KeyS" aria-label="เบรก">BRAKE</button>
       <button class="touch-key" data-key="KeyW" aria-label="เร่ง">▲<small>THROTTLE</small></button>
     </div>
+    <button class="touch-key mobile-boost" data-key="ShiftLeft" aria-label="บูสต์">BOOST</button>
   </div>
   <div id="hint">W A S D · SPACE · SHIFT · ลากเมาส์หมุนกล้อง · ล้อเมาส์ซูม · C เปลี่ยนมุมกล้อง</div>
 </div>
@@ -173,14 +173,20 @@ function layoutRaceOverlay(){
   var wrap=canvas.parentElement, leftPanel=document.getElementById('hud-left');
   if(!wrap||!leftPanel) return;
   var isTouch=window.matchMedia&&window.matchMedia('(hover:none) and (pointer:coarse)').matches;
-  var mapSize=isTouch?88:142;
+  var mapSize=isTouch?92:142;
   miniMap.style.width=mapSize+'px';
   miniMap.style.height=mapSize+'px';
-  miniMap.style.left=(isTouch?10:18)+'px';
+  miniMap.style.left=isTouch?'auto':'18px';
+  miniMap.style.right=isTouch?'10px':'auto';
   miniMap.style.bottom='auto';
+  if(isTouch){
+    // แผนที่อยู่มุมขวาบน เพื่อเว้นพื้นที่เดิมให้ปุ่ม Boost ที่กดง่าย
+    miniMap.style.top='12px';
+    return;
+  }
   var wrapTop=wrap.getBoundingClientRect().top;
   var wanted=leftPanel.getBoundingClientRect().bottom-wrapTop+10;
-  var reserved=isTouch?112:12;
+  var reserved=12;
   var maxTop=Math.max(8,wrap.clientHeight-mapSize-reserved);
   miniMap.style.top=Math.max(8,Math.min(wanted,maxTop))+'px';
 }
