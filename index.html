@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8">
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#111a23"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Moto Racer"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icons/moto-racer.svg">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden}
@@ -123,6 +123,10 @@ body{background:#1a1a2e;overflow:hidden}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
+// PWA: ใช้งานได้เมื่อเปิดผ่าน HTTPS เช่น GitHub Pages (file:// จะข้ามอย่างปลอดภัย)
+if('serviceWorker' in navigator&&location.protocol!=='file:'){
+  window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(err){console.warn('PWA offline cache unavailable',err);});});
+}
 var K={};
 window.addEventListener('keydown',function(e){
   K[e.code]=true; K[e.key]=true; K[e.key.toLowerCase()]=true;
